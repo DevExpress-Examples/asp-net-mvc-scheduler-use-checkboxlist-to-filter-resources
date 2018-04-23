@@ -1,0 +1,18 @@
+﻿@model SchedulerFilterResourcesDataLevelMvc.Models.SchedulerDataObject
+
+<table>
+    <tr>
+        <td valign="top">
+            @Html.DevExpress().CheckBoxList(settings => {
+                settings.Name = "cbResources";
+                settings.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                settings.Properties.ClientSideEvents.SelectedIndexChanged = "function (s, e) { scheduler.PerformCallback(); }";
+                settings.Properties.ValueField = "ID";
+                settings.Properties.TextField = "Model";
+            }).BindList(Model.Resources).GetHtml()
+        </td>
+        <td>
+            @Html.Partial("SchedulerPartial", Model)
+        </td>
+    </tr>
+</table>
