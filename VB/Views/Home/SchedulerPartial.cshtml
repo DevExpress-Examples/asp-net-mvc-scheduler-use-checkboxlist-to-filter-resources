@@ -1,0 +1,3 @@
+@using SchedulerFilterResourcesDataLevelMvc.Code
+
+@Html.DevExpress().Scheduler(Html.CreateSchedulerSettings()).Bind(Model.Appointments, Model.Resources).GetHtml()
