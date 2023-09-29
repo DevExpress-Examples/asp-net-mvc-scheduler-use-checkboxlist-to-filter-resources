@@ -1,113 +1,77 @@
-﻿Imports Microsoft.VisualBasic
 Imports System.Linq
 Imports System.Collections
-Imports DevExpress.Web.Mvc
 Imports System.Collections.Generic
 
 Namespace SchedulerFilterResourcesDataLevelMvc.Models
-	Public Class SchedulerDataObject
-		Private privateAppointments As IEnumerable
-		Public Property Appointments() As IEnumerable
-			Get
-				Return privateAppointments
-			End Get
-			Set(ByVal value As IEnumerable)
-				privateAppointments = value
-			End Set
-		End Property
-		Private privateResources As IEnumerable
-		Public Property Resources() As IEnumerable
-			Get
-				Return privateResources
-			End Get
-			Set(ByVal value As IEnumerable)
-				privateResources = value
-			End Set
-		End Property
-	End Class
 
-	Public Class SchedulerDataHelper
-		Public Shared Function GetResources() As IEnumerable
-			Dim db As New SchedulingDataClassesDataContext()
-			Return _
-				From res In db.Cars _
-				Select res
-		End Function
+    Public Class SchedulerDataObject
 
-		Public Shared Function GetAppointments() As IEnumerable
-			Dim db As New SchedulingDataClassesDataContext()
-			Return _
-				From apt In db.CarSchedulings _
-				Select apt
-		End Function
+        Public Property Appointments As IEnumerable
 
-		Public Shared ReadOnly Property DataObject() As SchedulerDataObject
-			Get
-				Return New SchedulerDataObject() With {.Appointments = GetAppointments(), .Resources = GetResources()}
-			End Get
-		End Property
+        Public Property Resources As IEnumerable
+    End Class
 
-		Public Shared Function GetResources(ByVal resourceIds As List(Of Integer)) As IEnumerable
-			If resourceIds.Count = 0 Then
-				Return GetResources()
-			End If
+    Public Class SchedulerDataHelper
 
-			Dim db As New SchedulingDataClassesDataContext()
+        Public Shared Function GetResources() As IEnumerable
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            Return From res In db.Cars Select res
+        End Function
 
-			Return _
-				From res In db.Cars _
-				Where resourceIds.Contains(res.ID) _
-				Select res
-		End Function
+        Public Shared Function GetAppointments() As IEnumerable
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            Return From apt In db.CarSchedulings Select apt
+        End Function
 
-		Public Shared Function GetDataObject(ByVal resourceIds As List(Of Integer)) As SchedulerDataObject
-			Return New SchedulerDataObject() With {.Appointments = GetAppointments(), .Resources = GetResources(resourceIds)}
-		End Function
+        Public Shared ReadOnly Property DataObject As SchedulerDataObject
+            Get
+                Return New SchedulerDataObject() With {.Appointments = GetAppointments(), .Resources = GetResources()}
+            End Get
+        End Property
 
-		Public Shared Sub InsertAppointment(ByVal appt As CarScheduling)
-			If appt Is Nothing Then
-				Return
-			End If
-			Dim db As New SchedulingDataClassesDataContext()
-			appt.ID = appt.GetHashCode()
-			db.CarSchedulings.InsertOnSubmit(appt)
-			db.SubmitChanges()
-		End Sub
+        Public Shared Function GetResources(ByVal resourceIds As List(Of Integer)) As IEnumerable
+            If resourceIds.Count = 0 Then Return GetResources()
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            Return From res In db.Cars Where resourceIds.Contains(res.ID) Select res
+        End Function
 
-		Public Shared Sub UpdateAppointment(ByVal appt As CarScheduling)
-			If appt Is Nothing Then
-				Return
-			End If
-			Dim db As New SchedulingDataClassesDataContext()
-			Dim query As CarScheduling = CType(( _
-						From carSchedule In db.CarSchedulings _
-						Where carSchedule.ID = appt.ID _
-						Select carSchedule).SingleOrDefault(), CarScheduling)
+        Public Shared Function GetDataObject(ByVal resourceIds As List(Of Integer)) As SchedulerDataObject
+            Return New SchedulerDataObject() With {.Appointments = GetAppointments(), .Resources = GetResources(resourceIds)}
+        End Function
 
-			query.ID = appt.ID
-			query.StartTime = appt.StartTime
-			query.EndTime = appt.EndTime
-			query.AllDay = appt.AllDay
-			query.Subject = appt.Subject
-			query.Description = appt.Description
-			query.Location = appt.Location
-			query.RecurrenceInfo = appt.RecurrenceInfo
-			query.ReminderInfo = appt.ReminderInfo
-			query.Status = appt.Status
-			query.EventType = appt.EventType
-			query.Label = appt.Label
-			query.CarId = appt.CarId
-			db.SubmitChanges()
-		End Sub
+        Public Shared Sub InsertAppointment(ByVal appt As CarScheduling)
+            If appt Is Nothing Then Return
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            appt.ID = appt.GetHashCode()
+            db.CarSchedulings.InsertOnSubmit(appt)
+            db.SubmitChanges()
+        End Sub
 
-		Public Shared Sub RemoveAppointment(ByVal appt As CarScheduling)
-			Dim db As New SchedulingDataClassesDataContext()
-			Dim query As CarScheduling = CType(( _
-						From carSchedule In db.CarSchedulings _
-						Where carSchedule.ID = appt.ID _
-						Select carSchedule).SingleOrDefault(), CarScheduling)
-			db.CarSchedulings.DeleteOnSubmit(query)
-			db.SubmitChanges()
-		End Sub
-	End Class
+        Public Shared Sub UpdateAppointment(ByVal appt As CarScheduling)
+            If appt Is Nothing Then Return
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            Dim query As CarScheduling = CType((From carSchedule In db.CarSchedulings Where carSchedule.ID = appt.ID Select carSchedule).SingleOrDefault(), CarScheduling)
+            query.ID = appt.ID
+            query.StartTime = appt.StartTime
+            query.EndTime = appt.EndTime
+            query.AllDay = appt.AllDay
+            query.Subject = appt.Subject
+            query.Description = appt.Description
+            query.Location = appt.Location
+            query.RecurrenceInfo = appt.RecurrenceInfo
+            query.ReminderInfo = appt.ReminderInfo
+            query.Status = appt.Status
+            query.EventType = appt.EventType
+            query.Label = appt.Label
+            query.CarId = appt.CarId
+            db.SubmitChanges()
+        End Sub
+
+        Public Shared Sub RemoveAppointment(ByVal appt As CarScheduling)
+            Dim db As SchedulingDataClassesDataContext = New SchedulingDataClassesDataContext()
+            Dim query As CarScheduling = CType((From carSchedule In db.CarSchedulings Where carSchedule.ID = appt.ID Select carSchedule).SingleOrDefault(), CarScheduling)
+            db.CarSchedulings.DeleteOnSubmit(query)
+            db.SubmitChanges()
+        End Sub
+    End Class
 End Namespace
