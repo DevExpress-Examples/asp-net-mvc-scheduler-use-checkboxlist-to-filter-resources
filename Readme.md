@@ -3,19 +3,18 @@
 [![](https://img.shields.io/badge/Open_in_DevExpress_Support_Center-FF7200?style=flat-square&logo=DevExpress&logoColor=white)](https://supportcenter.devexpress.com/ticket/details/E4717)
 [![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
 <!-- default badges end -->
-<!-- default file list -->
-*Files to look at*:
 
-* [SchedulerHelper.cs](./CS/Code/SchedulerHelper.cs) (VB: [SchedulerHelper.vb](./VB/Code/SchedulerHelper.vb))
-* [HomeController.cs](./CS/Controllers/HomeController.cs) (VB: [HomeController.vb](./VB/Controllers/HomeController.vb))
-* [Scheduling.cs](./CS/Models/Scheduling.cs) (VB: [Scheduling.vb](./VB/Models/Scheduling.vb))
-* [Index.cshtml](./CS/Views/Home/Index.cshtml)
-* [SchedulerPartial.cshtml](./CS/Views/Home/SchedulerPartial.cshtml)
-<!-- default file list end -->
-# How to filter resources in Scheduler via CheckBoxList
+# Scheduler for ASP.NET MVC - How to use CheckBoxList to filter resources
 
+This is a counterpart of the [How to filter resources in ASPxScheduler via ASPxListBox](https://github.com/DevExpress-Examples/how-to-filter-resources-in-aspxscheduler-via-aspxlistbox-e3783) code example but for ASP.NET MVC platform.
 
-<p>This is a counterpart of the <a href="https://www.devexpress.com/Support/Center/p/E3783">How to filter resources in ASPxScheduler via ASPxListBox</a> code example but for ASP.NET MVC platform. The implementation for this platform is quite different. As a starting point, we are using the data-bound Scheduler in the partial view (see Note section in the <a href="http://documentation.devexpress.com/#AspNet/CustomDocument9052">Using Callbacks</a> help article). You can find a similar logic in <a href="http://documentation.devexpress.com/#AspNet/CustomDocument11567">Lesson 2 - Implement Insert-Update-Delete Appointment Functionality</a>. But our code is more extensible and reliable for the following reason.</p><p></p><p>We use the <strong>SchedulerHelper </strong>class to initialize Scheduler settings for both view and controller. This allows us to implement a reliable solution according to the <a href="http://documentation.devexpress.com/#AspNet/CustomDocument11629">Lesson 3 - Use Scheduler in Complex Views</a>. This is preferable implementation, which should operate correctly in any possible scenarios.</p><p></p><p>It is not necessary to isolate the <a href="http://documentation.devexpress.com/#AspNet/CustomDocument10686">CheckBoxList</a> in a partial view because it is not operating in callback mode. Thus, we place it in the main view:</p><p></p>
+## Overview
+    
+As a starting point, we are using the data-bound Scheduler in the partial view (see Note section in the [Callback-Based Functionality](https://docs.devexpress.com/AspNetMvc/9052/common-features/callback-based-functionality) help article). You can find a similar logic in [Lesson 2 - Implement Insert-Update-Delete Appointment Functionality](https://docs.devexpress.com/AspNetMvc/11567/components/scheduler/get-started/lesson-2-implement-the-insert-update-delete-appointment-functionality). But our code is more extensible and reliable for the following reason.
+
+We use the **SchedulerHelper** class to initialize Scheduler settings for both view and controller. This allows us to implement a reliable solution according to the [Lesson 3 - Use Scheduler in Complex Views](https://docs.devexpress.com/AspNetMvc/11629/components/scheduler/get-started/lesson-3-use-scheduler-in-complex-views). This is preferable implementation, which should operate correctly in any possible scenarios.
+
+It is not necessary to isolate CheckBoxList in a partial view because it is not operating in callback mode. Thus, we place it in the main view:
 
 ```cs
 @model SchedulerFilterResourcesDataLevelMvc.Models.SchedulerDataObject
@@ -49,21 +48,25 @@
 </table>
 ```
 
-<p></p><p>The <strong>OnBeginCallback </strong>function name is assigned to the 'settings.ClientSideEvents.BeginCallback' attribute of the Scheduler settings initialized in the <strong>SchedulerHelper </strong>class. Thus, this function is called before callback occurs. We pass parameters to the corresponding controller's action in this function as described in the <a href="http://documentation.devexpress.com/#AspNet/CustomDocument9941">Passing Values to Controller Action Through Callbacks</a> help section. This action is defined as follows:</p><p></p>
+The `OnBeginCallback` function name is assigned to the `settings.ClientSideEvents.BeginCallback` attribute of the Scheduler settings initialized in the **SchedulerHelper** class. Thus, this function is called before callback occurs. We pass parameters to the corresponding controller's action in this function as described in the[Passing Values to Controller Action Through Callbacks](https://docs.devexpress.com/AspNetMvc/9941/common-features/callback-based-functionality/passing-values-to-a-controller-action-through-callbacks) help topic. This action is defined as follows:
 
 ```cs
-    public ActionResult SchedulerPartial() {
-        return PartialView("SchedulerPartial", SchedulerDataHelper.GetDataObject(GetSelectedResourceIds()));
-    }
-    ...
-    List<int> GetSelectedResourceIds() {
-        string request = (Request.Params["SelectedResources"] != null) ? (Request.Params["SelectedResources"]) : string.Empty;
-        return (request != string.Empty) ? request.Split(',').Select(n => Convert.ToInt32(n)).ToList<int>() : new List<int>();
-    }
+public ActionResult SchedulerPartial() {
+    return PartialView("SchedulerPartial", SchedulerDataHelper.GetDataObject(GetSelectedResourceIds()));
+}
+...
+List<int> GetSelectedResourceIds() {
+    string request = (Request.Params["SelectedResources"] != null) ? (Request.Params["SelectedResources"]) : string.Empty;
+    return (request != string.Empty) ? request.Split(',').Select(n => Convert.ToInt32(n)).ToList<int>() : new List<int>();
+}
 ```
 
-<p></p><p>The <strong>SchedulerDataHelper.GetDataObject()</strong> method is implemented so that the returned object resources are filtered by a list of Ids passed to this method. Note that we use this method in the <strong>EditAppointment </strong>action either.</p><p></p><p><strong>See Also:</strong></p><p><a href="https://www.devexpress.com/Support/Center/p/E4496">Scheduler - How to filter appointments by resources</a></p>
+The `SchedulerDataHelper.GetDataObject()` method is implemented so that the returned object resources are filtered by a list of Ids passed to this method. Note that we use this method in the `EditAppointment` action either.
 
-<br/>
+## Files to Review
 
-
+* [SchedulerHelper.cs](./CS/Code/SchedulerHelper.cs) (VB: [SchedulerHelper.vb](./VB/Code/SchedulerHelper.vb))
+* [HomeController.cs](./CS/Controllers/HomeController.cs) (VB: [HomeController.vb](./VB/Controllers/HomeController.vb))
+* [Scheduling.cs](./CS/Models/Scheduling.cs) (VB: [Scheduling.vb](./VB/Models/Scheduling.vb))
+* [Index.cshtml](./CS/Views/Home/Index.cshtml)
+* [SchedulerPartial.cshtml](./CS/Views/Home/SchedulerPartial.cshtml)
